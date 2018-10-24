@@ -48,7 +48,7 @@ bool isAsync(const vector<string>& commands){ // Checks for & symbol
     return false;
 }
 
-char** toArray(vector<string> commands){
+char** toArray(vector<string> commands){ // Converts C++ vector to C-like char array
     char* result[commands.size()];
     for(int i=0; i<commands.size(); i++){
         strcpy(result[i], commands[i].c_str());
@@ -56,19 +56,24 @@ char** toArray(vector<string> commands){
     return result;
 }
 
+void handler(int num){ //Dummy function
+    return;
+}
+
 void executeCommand(vector<string>& commands){
-    pid_t pid = fork();
+    pid_t pid = fork(); // Creates a child
     int flag;
     if(pid < 0)
         cout<<"An internal error occured .. My apologies :("<<endl;
     else if(pid == 0){
         char** arr = toArray(commands);
         int result = execvp(*arr, arr);
-        if(!result) cout<<"Wrong command .. Try again"<<endl;
+        if(!result)
+            cout<<"Wrong command .. Try again"<<endl;
     }
     else{
         if(isAsync(commands)){
-            wait(&flag);
+            signal(SIGCHLD, handler);
         }
         else{
             wait(&flag);
