@@ -7,6 +7,10 @@
 
 using namespace std;
 
+void initializeLog(){ // TBC
+    return;
+}
+
 void welcomeScreen(){
     cout<<"*********************************\n";
     cout<<"Welcome to this Simple Unix Shell\n";
@@ -56,40 +60,53 @@ char** toArray(vector<string> commands){ // Converts C++ vector to C-like char a
     return result;
 }
 
-void handler(int num){ //Dummy function
+void writeToLog(string message){ // TBC
     return;
 }
 
-void executeCommand(vector<string>& commands){
+void signalHandler(int sigNum){ // TBC
+    return;
+}
+
+bool executeCommand(vector<string>& commands){
     int pid = fork(); // Creates a child
     //cout<<"PID : "<<pid<<endl;
     if(pid < 0){
         cout<<"An internal error occured .. My apologies :("<<endl;
-        return;
+        return false;
     }
-    else if(pid == 0){
+    else if(pid == 0){ //Process
         char** arr = toArray(commands);
         int result = execvp(arr[0], arr);
-        if(result < 0)
+        if(result < 0){
             cout<<"Wrong command .. Try again"<<endl;
+            return false;
+        }
+
     }
-    else{
-        if(!isAsync(commands)){
+    else{ //Parent
+        if(isAsync(commands)){
+            signal(SIGCHLD, signalHandler);
+        }else{
             wait(NULL);
         }
-        return;
     }
+    return true;
 }
 
 
 int main(){
+    initializeLog(); // To be implemented
 	welcomeScreen();
 	vector<string> commands;
 	do{
         cout<<"Shell >> ";
-        commands = parseInput(scanCommands());
+        string input = scanCommands();
+        commands = parseInput(input);
 
-        executeCommand(commands);
+        if(executeCommand(commands)){
+            writeToLog(input + " executed successfully\n"); // To be implemented
+        }
 
 
 	}while(commands[0]!="exit" && commands[0]!="close" && commands[0]!="end");
