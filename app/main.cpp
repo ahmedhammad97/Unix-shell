@@ -1,7 +1,6 @@
 #include <iostream>
 #include <vector>
 #include <unistd.h>
-#include <exception>
 #include <string.h>
 #include <signal.h>
 #include <wait.h>
@@ -49,8 +48,9 @@ bool isAsync(const vector<string>& commands){ // Checks for & symbol
 }
 
 char** toArray(vector<string> commands){ // Converts C++ vector to C-like char array
-    char* result[commands.size()];
+    char** result = new char* [commands.size()];
     for(int i=0; i<commands.size(); i++){
+        result[i] = new char[commands[i].size() + 1];
         strcpy(result[i], commands[i].c_str());
     }
     return result;
@@ -61,23 +61,23 @@ void handler(int num){ //Dummy function
 }
 
 void executeCommand(vector<string>& commands){
-    pid_t pid = fork(); // Creates a child
-    int flag;
-    if(pid < 0)
+    int pid = fork(); // Creates a child
+    //cout<<"PID : "<<pid<<endl;
+    if(pid < 0){
         cout<<"An internal error occured .. My apologies :("<<endl;
+        return;
+    }
     else if(pid == 0){
         char** arr = toArray(commands);
-        int result = execvp(*arr, arr);
-        if(!result)
+        int result = execvp(arr[0], arr);
+        if(result < 0)
             cout<<"Wrong command .. Try again"<<endl;
     }
     else{
-        if(isAsync(commands)){
-            signal(SIGCHLD, handler);
+        if(!isAsync(commands)){
+            wait(NULL);
         }
-        else{
-            wait(&flag);
-        }
+        return;
     }
 }
 
@@ -86,6 +86,7 @@ int main(){
 	welcomeScreen();
 	vector<string> commands;
 	do{
+        cout<<"Shell >> ";
         commands = parseInput(scanCommands());
 
         executeCommand(commands);
