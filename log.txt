@@ -1,0 +1,11 @@
+pwd executed successfully
+ping  executed successfully
+clear executed successfully
+pwd executed successfully
+close executed successfully
+ping 192.182.157.1.5 executed successfully
+exit executed successfully
+help -p executed successfully
+exit executed successfully
+-ls executed successfully
+exit executed successfully

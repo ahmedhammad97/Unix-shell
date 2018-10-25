@@ -4,12 +4,13 @@
 #include <string.h>
 #include <signal.h>
 #include <wait.h>
+#include <fstream>
 
 using namespace std;
 
-void initializeLog(){ // TBC
-    return;
-}
+// Global file variable
+ofstream log;
+
 
 void welcomeScreen(){
     cout<<"*********************************\n";
@@ -60,16 +61,13 @@ char** toArray(vector<string> commands){ // Converts C++ vector to C-like char a
     return result;
 }
 
-void writeToLog(string message){ // TBC
-    return;
-}
-
-void signalHandler(int sigNum){ // TBC
-    return;
+void signalHandler(int sigNum){
+    log << "Child terminated" << endl;
 }
 
 bool executeCommand(vector<string>& commands){
     int pid = fork(); // Creates a child
+
     //cout<<"PID : "<<pid<<endl;
     if(pid < 0){
         cout<<"An internal error occured .. My apologies :("<<endl;
@@ -96,18 +94,23 @@ bool executeCommand(vector<string>& commands){
 
 
 int main(){
-    initializeLog(); // To be implemented
 	welcomeScreen();
+	log.open("../log.txt");
+
 	vector<string> commands;
+
 	do{
         cout<<"Shell >> ";
         string input = scanCommands();
         commands = parseInput(input);
 
         if(executeCommand(commands)){
-            writeToLog(input + " executed successfully\n"); // To be implemented
+            log << input << " executed successfully" << endl;
         }
 
-
 	}while(commands[0]!="exit" && commands[0]!="close" && commands[0]!="end");
+
+	log.close();
+
+	return 0;
 }
