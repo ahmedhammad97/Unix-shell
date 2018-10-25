@@ -97,18 +97,20 @@ int main(){
 	welcomeScreen();
 	log.open("../log.txt");
 
-	vector<string> commands;
+	vector<string> commands = {""};
 
 	do{
         cout<<"Shell >> ";
         string input = scanCommands();
         commands = parseInput(input);
 
+        if(commands[0]=="exit" || commands[0]=="close" || commands[0]=="end"){break;}
+
         if(executeCommand(commands)){
             log << input << " executed successfully" << endl;
         }
 
-	}while(commands[0]!="exit" && commands[0]!="close" && commands[0]!="end");
+	}while(true);
 
 	log.close();
 
